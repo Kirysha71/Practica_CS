@@ -1,0 +1,21 @@
+﻿<Window x:Class="GradeJournal.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Вход" Height="300" Width="350" WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="20">
+        <TextBlock Text="Электронный журнал" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <TextBlock Text="Логин"/>
+        <TextBox x:Name="TxtLogin" Margin="0,5"/>
+
+        <TextBlock Text="Пароль"/>
+        <PasswordBox x:Name="TxtPass" Margin="0,5" RenderTransformOrigin="0.503,0.56"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
+            <Button Content="Войти" Width="130" Command="{Binding LoginCommand}" Click="BtnLogin_Click" 
+                    Visibility="{Binding IsLoginMode, Converter={StaticResource BoolToVis}}" Height="25"/>
+            <Button Content="Зарегистрироваться" Width="130" Command="{Binding RegisterCommand}" Click="BtnRegister_Click"
+                    Visibility="{Binding IsLoginMode, ConverterParameter=Invert, Converter={StaticResource BoolToVis}}" Margin="30,0,0,0"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

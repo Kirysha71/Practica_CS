@@ -10,11 +10,19 @@ namespace GradeJournal
 {
     public partial class MainWindow : Window
     {
+        private readonly UserModel _currentUser;
+
         public MainWindow(UserModel user)
         {
             InitializeComponent();
+            _currentUser = user;
             DataContext = new JournalViewModel(user);
             Title = $"Электронный журнал - {user.FullName}";
+
+            // Добавляем горячую клавишу Ctrl+T для чата
+            InputBindings.Add(new KeyBinding(
+                new RelayCommand(_ => OpenChat_Click(null, null)),
+                Key.T, ModifierKeys.Control));
         }
 
         private void StudentCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -31,11 +39,8 @@ namespace GradeJournal
                     }
 
                     vm.SelectedStudent = clickedStudent;
-
                     ResetAllBordersVisuals(clickedBorder);
-
                     HighlightBorder(clickedBorder);
-
                     PlayClickAnimation(clickedBorder);
                 }
             }
@@ -44,7 +49,6 @@ namespace GradeJournal
         private void ResetAllBordersVisuals(Border excludeBorder)
         {
             var itemsControl = FindVisualChild<ItemsControl>(this);
-
             if (itemsControl != null)
             {
                 foreach (var item in itemsControl.Items)
@@ -130,18 +134,24 @@ namespace GradeJournal
         private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             if (parent == null) return null;
-
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T typedChild)
-                    return typedChild;
-
+                if (child is T typedChild) return typedChild;
                 var childOfChild = FindVisualChild<T>(child);
-                if (childOfChild != null)
-                    return childOfChild;
+                if (childOfChild != null) return childOfChild;
             }
             return null;
+        }
+
+        private void OpenChat_Click(object sender, RoutedEventArgs e)
+        {
+            bool isTeacher = _currentUser?.FullName?.Contains("Преподаватель") == true;
+            string userName = _currentUser?.FullName ?? "Пользователь";
+
+            var chatWindow = new ChatWindow(userName, isTeacher);
+            chatWindow.Owner = this;
+            chatWindow.Show();
         }
     }
 }

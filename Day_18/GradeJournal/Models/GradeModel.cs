@@ -1,0 +1,54 @@
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace GradeJournal.Models
+{
+    public class GradeModel : INotifyPropertyChanged
+    {
+        private int _id;
+        private int _studentId;
+        private string _subject;
+        private int _value;
+        private string _comment;
+
+        public int Id
+        {
+            get => _id;
+            set { _id = value; OnPropertyChanged(); }
+        }
+
+        public int StudentId
+        {
+            get => _studentId;
+            set { _studentId = value; OnPropertyChanged(); }
+        }
+
+        public string Subject
+        {
+            get => _subject;
+            set { _subject = value; OnPropertyChanged(); }
+        }
+
+        public int Value
+        {
+            get => _value;
+            set
+            {
+                if (value < 2) _value = 2;
+                else if (value > 5) _value = 5;
+                else _value = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Comment
+        {
+            get => _comment;
+            set { _comment = value; OnPropertyChanged(); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+}

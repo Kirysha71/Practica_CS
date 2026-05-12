@@ -26,7 +26,7 @@
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left" Margin="20,0,0,12" Width="309">
             <Button Content="Войти" Width="120" Padding="10,5" FontSize="14"
                     Command="{Binding LoginCommand}"
-                    Visibility="{Binding IsLoginMode, Converter={StaticResource BoolToVis}}" Margin="0,0,30,0"/>
+                    Visibility="{Binding IsLoginMode, Converter={StaticResource BoolToVis}}" Margin="0,0,30,0" Click="Button_Click"/>
             <Button Content="Зарегистрироваться" Width="159" Padding="10,5" FontSize="14"
                     Command="{Binding RegisterCommand}"
                     Visibility="{Binding IsLoginMode, ConverterParameter=Invert, Converter={StaticResource BoolToVis}}"/>

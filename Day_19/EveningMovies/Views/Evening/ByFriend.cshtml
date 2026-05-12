@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EveningMovies.Models.Movie>
+
+@{
+    ViewData["Title"] = $"Фильмы от {ViewBag.FriendName}";
+}
+
+<h1>🎥 Фильмы, рекомендованные другом: @ViewBag.FriendName</h1>
+
+<p>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">← Вернуться ко всем фильмам</a>
+</p>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Жанр</th>
+                <th>Рекомендовал</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movie in Model)
+            {
+                <tr>
+                    <td>@movie.Title</td>
+                    <td>@movie.Genre</td>
+                    <td>@movie.RecommendedBy</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Нет фильмов от этого друга.</p>
+}

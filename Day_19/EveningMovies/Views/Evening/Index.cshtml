@@ -1,0 +1,37 @@
+﻿@model IEnumerable<EveningMovies.Models.Movie>
+
+@{
+    ViewData["Title"] = "Список фильмов на вечер";
+}
+
+<h1> Список фильмов на вечер</h1>
+
+<p>
+    <a href="@Url.Action("Suggest")" class="btn btn-primary">➕ Предложить фильм</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Жанр</th>
+            <th>Рекомендовал</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in Model)
+        {
+            <tr>
+                <td>@movie.Title</td>
+                <td>@movie.Genre</td>
+                <td>@movie.RecommendedBy</td>
+                <td>
+                    <a href="@Url.Action("ByFriend", new { name = movie.RecommendedBy })">
+                        Фильмы от @movie.RecommendedBy
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

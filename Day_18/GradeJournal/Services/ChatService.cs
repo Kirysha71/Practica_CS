@@ -58,7 +58,7 @@ namespace GradeJournal.Services
                     attempts++;
                     if (attempts >= maxAttempts)
                     {
-                        MessageBox.Show("Не удалось подключиться к чату.\nУбедитесь, что учитель запустил приложение.", "Ошибка подключения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Не удалось подключиться к чату.Убедитесь, что учитель запустил приложение.", "Ошибка подключения", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
                     await Task.Delay(1000);

@@ -1,44 +1,67 @@
-﻿using EveningMovies.Models;
+﻿using EveningMovies.Data;
+using EveningMovies.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EveningMovies.Services
 {
     public class EveningMovieService : IEveningMovieService
     {
-        private static List<Movie> _movies = new List<Movie>
-        {
-            new Movie { Id = 1, Title = "Побег из Шоушенка", Genre = "Драма", RecommendedBy = "Алексей" },
-            new Movie { Id = 2, Title = "Криминальное чтиво", Genre = "Криминал", RecommendedBy = "Мария" },
-            new Movie { Id = 3, Title = "Начало", Genre = "Фантастика", RecommendedBy = "Дмитрий" },
-            new Movie { Id = 4, Title = "Титаник", Genre = "Мелодрама", RecommendedBy = "Елена" },
-            new Movie { Id = 5, Title = "Матрица", Genre = "Фантастика", RecommendedBy = "Алексей" },
-            new Movie { Id = 6, Title = "Бойцовский клуб", Genre = "Драма", RecommendedBy = "Дмитрий" }
-        };
+        private readonly ApplicationDbContext _context;
 
-        public List<Movie> GetAllMovies()
+        public EveningMovieService(ApplicationDbContext context)
         {
-            return _movies.ToList();
+            _context = context;
         }
 
-        public List<Movie> GetMoviesByGenre(string genre)
+        public async Task<List<EveningMovie>> GetAllMoviesAsync()
+        {
+            return await _context.EveningMovies.ToListAsync();
+        }
+
+        public async Task<List<EveningMovie>> GetMoviesByGenreAsync(string genre)
         {
             if (string.IsNullOrWhiteSpace(genre))
-                return _movies.ToList();
+                return await GetAllMoviesAsync();
 
-            return _movies.Where(m => m.Genre == genre).ToList();
+            return await _context.EveningMovies
+                .Where(m => m.Genre == genre)
+                .ToListAsync();
         }
 
-        public List<Movie> GetMoviesByFriend(string friendName)
+        public async Task<List<EveningMovie>> GetMoviesByMoodTagAsync(string moodTag)
+        {
+            if (string.IsNullOrWhiteSpace(moodTag))
+                return await GetAllMoviesAsync();
+
+            return await _context.EveningMovies
+                .Where(m => m.MoodTag == moodTag)
+                .ToListAsync();
+        }
+
+        public async Task<List<EveningMovie>> GetMoviesByFriendAsync(string friendName)
         {
             if (string.IsNullOrWhiteSpace(friendName))
-                return _movies.ToList();
+                return await GetAllMoviesAsync();
 
-            return _movies.Where(m => m.RecommendedBy == friendName).ToList();
+            return await _context.EveningMovies
+                .Where(m => m.AddedBy == friendName)
+                .ToListAsync();
         }
 
-        public void AddMovie(Movie movie)
+        public async Task AddMovieAsync(EveningMovie movie)
         {
-            movie.Id = _movies.Max(m => m.Id) + 1;
-            _movies.Add(movie);
+            _context.EveningMovies.Add(movie);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteMovieAsync(int id)
+        {
+            var movie = await _context.EveningMovies.FindAsync(id);
+            if (movie != null)
+            {
+                _context.EveningMovies.Remove(movie);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

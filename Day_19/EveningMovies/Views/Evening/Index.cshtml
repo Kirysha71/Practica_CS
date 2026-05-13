@@ -1,86 +1,67 @@
-﻿@model List<EveningMovies.Models.Movie>
+﻿@model List<EveningMovies.Models.EveningMovie>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Фильмы на вечер</title>
     <style>
-        body {
-            font-family: Arial;
-            margin: 20px;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .filter {
-            margin: 20px 0;
-        }
-
-            .filter a {
-                margin-right: 10px;
-            }
-
-        .alert {
-            padding: 10px;
-            background: #d4edda;
-            margin-bottom: 10px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 5px 10px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-        }
+        body { font-family: Arial; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .filter { margin: 20px 0; }
+        .filter a { margin-right: 10px; }
+        .alert { padding: 10px; background: #d4edda; margin-bottom: 10px; }
+        .btn { display: inline-block; padding: 5px 10px; background: #007bff; color: white; text-decoration: none; margin-right: 5px; }
+        .btn-danger { background: #dc3545; }
+        .delete-form { display: inline; }
     </style>
 </head>
 <body>
-    <h1>Список фильмов на вечер</h1>
-
+    <h1>🎬 Список фильмов на вечер</h1>
+    
     @if (TempData["Success"] != null)
     {
         <div class="alert">@TempData["Success"]</div>
     }
-
+    
     <div class="alert" style="background: #d1ecf1;">
         @ViewBag.Message
     </div>
-
+    
     <div>
-        <a href="/Evening/Suggest" class="btn">Предложить фильм</a>
-        <a href="/Evening/Index" class="btn">Все фильмы</a>
+        <a href="/Evening/Suggest" class="btn">➕ Предложить фильм</a>
+        <a href="/Evening/Index" class="btn">📋 Все фильмы</a>
     </div>
-
+    
     <div class="filter">
-        <strong>Фильтр по жанру:</strong>
-        <a href="/Evening/Index">Все фильмы</a>
+        <strong> Жанр:</strong>
+        <a href="/Evening/Index">Все</a>
         <a href="/Evening/ByGenre?genre=Драма">Драма</a>
         <a href="/Evening/ByGenre?genre=Комедия">Комедия</a>
         <a href="/Evening/ByGenre?genre=Фантастика">Фантастика</a>
         <a href="/Evening/ByGenre?genre=Криминал">Криминал</a>
         <a href="/Evening/ByGenre?genre=Мелодрама">Мелодрама</a>
     </div>
-
+    
+    <div class="filter">
+        <strong> Настроение:</strong>
+        <a href="/Evening/Index">Все</a>
+        <a href="/Evening/ByMoodTag?moodTag=Веселое"> Веселое</a>
+        <a href="/Evening/ByMoodTag?moodTag=Грустное"> Грустное</a>
+        <a href="/Evening/ByMoodTag?moodTag=Страшное"> Страшное</a>
+        <a href="/Evening/ByMoodTag?moodTag=Романтичное"> Романтичное</a>
+        <a href="/Evening/ByMoodTag?moodTag=Спокойное"> Спокойное</a>
+    </div>
+    
     <table>
         <thead>
             <tr>
                 <th>Название</th>
                 <th>Жанр</th>
-                <th>Рекомендовал</th>
+                <th>Настроение</th>
+                <th>Добавил</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -89,14 +70,26 @@
                 <tr>
                     <td>@movie.Title</td>
                     <td>@movie.Genre</td>
+                    <td>@movie.MoodTag</td>
                     <td>
-                        <a href="/Evening/ByFriend?name=@movie.RecommendedBy">
-                            @movie.RecommendedBy
+                        <a href="/Evening/ByFriend?name=@movie.AddedBy">
+                            @movie.AddedBy
                         </a>
+                    </td>
+                    <td>
+                        <form method="post" action="/Evening/Delete" class="delete-form" onsubmit="return confirm('Удалить фильм?')">
+                            <input type="hidden" name="id" value="@movie.Id" />
+                            <button type="submit" class="btn btn-danger">🗑 Удалить</button>
+                        </form>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    
+    @if (!Model.Any())
+    {
+        <p style="text-align: center; padding: 20px;">Нет фильмов</p>
+    }
 </body>
 </html>

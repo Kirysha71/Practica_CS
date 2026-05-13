@@ -4,9 +4,11 @@ namespace EveningMovies.Services
 {
     public interface IEveningMovieService
     {
-        List<Movie> GetAllMovies();
-        List<Movie> GetMoviesByGenre(string genre);
-        List<Movie> GetMoviesByFriend(string friendName);
-        void AddMovie(Movie movie);
+        Task<List<EveningMovie>> GetAllMoviesAsync();
+        Task<List<EveningMovie>> GetMoviesByGenreAsync(string genre);
+        Task<List<EveningMovie>> GetMoviesByMoodTagAsync(string moodTag);
+        Task<List<EveningMovie>> GetMoviesByFriendAsync(string friendName);
+        Task AddMovieAsync(EveningMovie movie);
+        Task DeleteMovieAsync(int id);
     }
 }

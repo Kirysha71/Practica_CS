@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using EveningMovies.Models;
 using EveningMovies.Services;
 
@@ -13,23 +14,30 @@ namespace EveningMovies.Controllers
             _movieService = movieService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var movies = _movieService.GetAllMovies();
+            var movies = await _movieService.GetAllMoviesAsync();
             ViewBag.Message = "Список всех фильмов";
             return View(movies);
         }
 
-        public IActionResult ByGenre(string genre)
+        public async Task<IActionResult> ByGenre(string genre)
         {
-            var movies = _movieService.GetMoviesByGenre(genre);
+            var movies = await _movieService.GetMoviesByGenreAsync(genre);
             ViewBag.Message = string.IsNullOrEmpty(genre) ? "Все фильмы" : $"Жанр: {genre}";
             return View("Index", movies);
         }
 
-        public IActionResult ByFriend(string name)
+        public async Task<IActionResult> ByMoodTag(string moodTag)
         {
-            var movies = _movieService.GetMoviesByFriend(name);
+            var movies = await _movieService.GetMoviesByMoodTagAsync(moodTag);
+            ViewBag.Message = string.IsNullOrEmpty(moodTag) ? "Все фильмы" : $"Настроение: {moodTag}";
+            return View("Index", movies);
+        }
+
+        public async Task<IActionResult> ByFriend(string name)
+        {
+            var movies = await _movieService.GetMoviesByFriendAsync(name);
             ViewBag.Message = string.IsNullOrEmpty(name) ? "Все фильмы" : $"Рекомендовал: {name}";
             return View("Index", movies);
         }
@@ -41,15 +49,23 @@ namespace EveningMovies.Controllers
         }
 
         [HttpPost]
-        public IActionResult Suggest(Movie movie)
+        public async Task<IActionResult> Suggest(EveningMovie movie)
         {
             if (ModelState.IsValid)
             {
-                _movieService.AddMovie(movie);
-                TempData["Success"] = $"Фильм {movie.Title} добавлен!";
+                await _movieService.AddMovieAsync(movie);
+                TempData["Success"] = $"Фильм \"{movie.Title}\" добавлен!";
                 return RedirectToAction("Index");
             }
             return View(movie);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _movieService.DeleteMovieAsync(id);
+            TempData["Success"] = "Фильм удален!";
+            return RedirectToAction("Index");
         }
     }
 }

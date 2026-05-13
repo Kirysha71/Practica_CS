@@ -1,49 +1,54 @@
 using Microsoft.AspNetCore.Mvc;
 using EveningMovies.Models;
+using EveningMovies.Services;
 
 namespace EveningMovies.Controllers
 {
     public class EveningController : Controller
     {
-        private static readonly List<Movie> Movies = new()
+        private readonly IEveningMovieService _movieService;
+
+        public EveningController(IEveningMovieService movieService)
         {
-            new Movie { Id = 1, Title = "Начало", Genre = "Фантастика", RecommendedBy = "Дмитрий" },
-            new Movie { Id = 2, Title = "Интерстеллар", Genre = "Фантастика", RecommendedBy = "Дмитрий" },
-            new Movie { Id = 3, Title = "Зеленая миля", Genre = "Драма", RecommendedBy = "Дмитрий" },
-            new Movie { Id = 4, Title = "Криминальное чтиво", Genre = "Боевик", RecommendedBy = "Дмитрий" }
-        };
+            _movieService = movieService;
+        }
 
         public IActionResult Index()
         {
-            return View(Movies);
+            var movies = _movieService.GetAllMovies();
+            ViewBag.Message = "Список всех фильмов";
+            return View(movies);
+        }
+
+        public IActionResult ByGenre(string genre)
+        {
+            var movies = _movieService.GetMoviesByGenre(genre);
+            ViewBag.Message = string.IsNullOrEmpty(genre) ? "Все фильмы" : $"Жанр: {genre}";
+            return View("Index", movies);
         }
 
         public IActionResult ByFriend(string name)
         {
-            var moviesByFriend = Movies
-                .Where(m => m.RecommendedBy.Equals(name, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            ViewBag.FriendName = name;
-            return View(moviesByFriend);
+            var movies = _movieService.GetMoviesByFriend(name);
+            ViewBag.Message = string.IsNullOrEmpty(name) ? "Все фильмы" : $"Рекомендовал: {name}";
+            return View("Index", movies);
         }
 
+        [HttpGet]
         public IActionResult Suggest()
         {
             return View();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Suggest(Movie movie)
         {
             if (ModelState.IsValid)
             {
-                movie.Id = Movies.Max(m => m.Id) + 1;
-                Movies.Add(movie);
-                return RedirectToAction(nameof(Index));
+                _movieService.AddMovie(movie);
+                TempData["Success"] = $"Фильм {movie.Title} добавлен!";
+                return RedirectToAction("Index");
             }
-
             return View(movie);
         }
     }

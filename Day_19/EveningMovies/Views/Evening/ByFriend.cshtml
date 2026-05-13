@@ -1,38 +1,198 @@
-﻿@model IEnumerable<EveningMovies.Models.Movie>
+﻿@model List<EveningMovies.Models.Movie>
 
 @{
-    ViewData["Title"] = $"Фильмы от {ViewBag.FriendName}";
+    ViewData["Title"] = "Фильмы от друзей";
 }
 
-<h1>🎥 Фильмы, рекомендованные другом: @ViewBag.FriendName</h1>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<p>
-    <a href="@Url.Action("Index")" class="btn btn-secondary">← Вернуться ко всем фильмам</a>
-</p>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-@if (Model.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Жанр</th>
-                <th>Рекомендовал</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var movie in Model)
-            {
-                <tr>
-                    <td>@movie.Title</td>
-                    <td>@movie.Genre</td>
-                    <td>@movie.RecommendedBy</td>
-                </tr>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+            .header h1 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
             }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Нет фильмов от этого друга.</p>
-}
+
+        .content {
+            padding: 30px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #0c5460;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .friend-buttons {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+            .friend-buttons h5 {
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .btn-outline-info {
+            background: transparent;
+            border: 2px solid #17a2b8;
+            color: #17a2b8;
+        }
+
+            .btn-outline-info:hover {
+                background: #17a2b8;
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Фильмы, рекомендованные друзьями</h1>
+            <p>Смотрите то, что советуют близкие люди</p>
+        </div>
+
+        <div class="content">
+            <div class="alert-info">
+                ℹ️ @ViewBag.Message
+            </div>
+
+            <div class="btn-group">
+                <a asp-action="Index" class="btn btn-secondary">◀ Назад ко всем фильмам</a>
+                <a asp-action="Suggest" class="btn btn-primary">➕ Предложить фильм</a>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>🎥 Название</th>
+                        <th>🎭 Жанр</th>
+                        <th>👤 Кто рекомендовал</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in Model)
+                    {
+                        <tr>
+                            <td><strong>@movie.Title</strong></td>
+                            <td>@movie.Genre</td>
+                            <td>@movie.RecommendedBy</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="friend-buttons">
+                <h5>🎯 Быстрый поиск по друзьям:</h5>
+                @{
+                    var friends = Model.Select(m => m.RecommendedBy).Distinct();
+                    foreach (var friend in friends)
+                    {
+                        <a asp-action="ByFriend" asp-route-name="@friend" class="btn btn-sm btn-outline-info">
+                            👥 @friend
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</body>
+</html>

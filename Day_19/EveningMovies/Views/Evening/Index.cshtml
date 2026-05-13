@@ -1,37 +1,102 @@
-﻿@model IEnumerable<EveningMovies.Models.Movie>
+﻿@model List<EveningMovies.Models.Movie>
 
-@{
-    ViewData["Title"] = "Список фильмов на вечер";
-}
-
-<h1> Список фильмов на вечер</h1>
-
-<p>
-    <a href="@Url.Action("Suggest")" class="btn btn-primary">➕ Предложить фильм</a>
-</p>
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Название</th>
-            <th>Жанр</th>
-            <th>Рекомендовал</th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var movie in Model)
-        {
-            <tr>
-                <td>@movie.Title</td>
-                <td>@movie.Genre</td>
-                <td>@movie.RecommendedBy</td>
-                <td>
-                    <a href="@Url.Action("ByFriend", new { name = movie.RecommendedBy })">
-                        Фильмы от @movie.RecommendedBy
-                    </a>
-                </td>
-            </tr>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Фильмы на вечер</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 20px;
         }
-    </tbody>
-</table>
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .filter {
+            margin: 20px 0;
+        }
+
+            .filter a {
+                margin-right: 10px;
+            }
+
+        .alert {
+            padding: 10px;
+            background: #d4edda;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список фильмов на вечер</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert">@TempData["Success"]</div>
+    }
+
+    <div class="alert" style="background: #d1ecf1;">
+        @ViewBag.Message
+    </div>
+
+    <div>
+        <a href="/Evening/Suggest" class="btn">Предложить фильм</a>
+        <a href="/Evening/Index" class="btn">Все фильмы</a>
+    </div>
+
+    <div class="filter">
+        <strong>Фильтр по жанру:</strong>
+        <a href="/Evening/Index">Все фильмы</a>
+        <a href="/Evening/ByGenre?genre=Драма">Драма</a>
+        <a href="/Evening/ByGenre?genre=Комедия">Комедия</a>
+        <a href="/Evening/ByGenre?genre=Фантастика">Фантастика</a>
+        <a href="/Evening/ByGenre?genre=Криминал">Криминал</a>
+        <a href="/Evening/ByGenre?genre=Мелодрама">Мелодрама</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Жанр</th>
+                <th>Рекомендовал</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movie in Model)
+            {
+                <tr>
+                    <td>@movie.Title</td>
+                    <td>@movie.Genre</td>
+                    <td>
+                        <a href="/Evening/ByFriend?name=@movie.RecommendedBy">
+                            @movie.RecommendedBy
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

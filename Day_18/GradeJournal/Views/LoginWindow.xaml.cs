@@ -8,7 +8,7 @@ namespace GradeJournal
     {
         public LoginViewModel ViewModel { get; } = new LoginViewModel();
 
-        public LoginWindow()
+        public LoginWindow() 
         {
             InitializeComponent();
             DataContext = ViewModel;
